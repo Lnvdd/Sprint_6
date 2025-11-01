@@ -1,6 +1,5 @@
 import pytest
 import allure
-import time
 from pages.main_page import MainPage
 from pages.order_page import OrderPage
 
@@ -32,6 +31,7 @@ ORDER_TEST_DATA = [
 @allure.feature("Заказ самоката")
 @allure.story("Позитивный сценарий заказа")
 class TestOrder:
+    @allure.title("Позитивный сценарий заказа через верхнюю кнопку")
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize("test_data", ORDER_TEST_DATA)
     def test_order_top_button(self, driver, test_data):
@@ -45,6 +45,7 @@ class TestOrder:
         order_page.submit_order()
         assert order_page.is_success_message_displayed()
 
+    @allure.title("Позитивный сценарий заказа через нижнюю кнопку")
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize("test_data", ORDER_TEST_DATA)
     def test_order_bottom_button(self, driver, test_data):
@@ -62,24 +63,21 @@ class TestOrder:
 @allure.feature("Навигация")
 @allure.story("Проверка логотипов")
 class TestNavigation:
+    @allure.title("Клик по логотипу Самоката ведёт на главную страницу")
     @allure.severity(allure.severity_level.MINOR)
     def test_scooter_logo_redirect(self, driver):
         main_page = MainPage(driver)
         main_page.open()
         main_page.click_order_button_top()
         main_page.click_scooter_logo()
-        time.sleep(2)
-        assert driver.current_url == main_page.url
+        main_page.wait_for_url_change(main_page.url)
+        assert main_page.driver.current_url == main_page.url
 
+    @allure.title("Клик по логотипу Яндекса открывает новое окно")
     @allure.severity(allure.severity_level.MINOR)
     def test_yandex_logo_redirect(self, driver):
         main_page = MainPage(driver)
         main_page.open()
-        original_window = driver.current_window_handle
         main_page.click_yandex_logo()
-        time.sleep(5)
-        windows = [w for w in driver.window_handles if w != original_window]
-        if windows:
-            driver.switch_to.window(windows[0])
-            time.sleep(3)
-        assert len(driver.window_handles) > 1
+        main_page.wait_for_multiple_windows()
+        assert len(main_page.driver.window_handles) > 1
