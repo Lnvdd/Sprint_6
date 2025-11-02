@@ -10,7 +10,7 @@ def driver():
     driver.maximize_window()
     yield driver
     if hasattr(driver, 'failed'):
-        allure.attach(driver.get_screenshot_as_png(), name="screenshot_on_failure", attachment_type=allure.attachment_type.PNG)
+        allure.attach(driver.get_screenshot_as_png(), name="screenshot on failure", attachment_type=allure.attachment_type.PNG)
     driver.quit()
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
